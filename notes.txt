@@ -1,0 +1,60 @@
+Notable features:
+- all important stuff
+- extra:
+    - breadth first using queue 
+    - keyword extraction
+    - async redis cache across nodes
+    - subdomain scanner
+
+TODO:
+/*
+- can add tags and other stuff to json body for searching
+- come up with algorithm to distribute crawling, need to go to another link if it ends
+- breadth first instead of depth first recursion?
+- redis cache to skip repeats requests?
+- frontend 
+- some sort page rank algorithm
+- add to kubernetes gcp, how to distribute computing
+- convert to typescript
+- set headless to true
+- organize files + MAKE CODE NICER AND PROFESSIONAL
+-  write subdomain scanner?
+- testing/continuous deployment?
+- use constant redis server
+*/
+
+/*
+if crawling ends, search most popular phrase or word, google it then follow links and continue
+use page rank with postgres db?
+hash function to distribute pages across nodes
+need to catch if it can't go to page and continue
+fix crawling stopping after there's 1 million domains now, 
+*/
+
+/*
+page rank
+distribute crawling across kubernetes somehow 
+constant redis cache
+frontend 
+catch + handle potential errors 
+testing/continuous dev
+typescript 
+make code look nicer + professional
+use ai to make searching better, search history, users?
+mobile port?
+image search use ai to index? scrape for images, get url of images then display
+voice assistant
+*/
+
+/*
+NOW:
+page rank
+backend to handle searching 
+frontend
+
+don't know:
+kubernetes
+constant elastic + redis
+use the score in elastic results?
+dupliate values
+*/

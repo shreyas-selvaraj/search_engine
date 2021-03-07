@@ -1,0 +1,14 @@
+frontend
+- display results 
+
+backend
+- errors 
+- page rank
+- crawling from top domains and distributing that
+
+devops:
+- kubernetes
+- redis
+- elasticsearch
+- distributing nodes 
+- server stuff

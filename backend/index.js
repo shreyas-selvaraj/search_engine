@@ -20,10 +20,10 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true,    
 }));
 
-app.listen(3001, () => {
-    console.log("LISTENING ON PORT 3001");
+app.listen(3002, () => {
+    console.log("LISTENING ON PORT 3002");
 })
 
-// //start browser and scraping
+//start browser and scraping
 // let browserInstance = browserObject.startBrowser();
 // scrapeController(browserInstance);

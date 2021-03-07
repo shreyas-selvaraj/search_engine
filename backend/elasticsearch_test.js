@@ -21,7 +21,7 @@ let body = {
     query: {
         //"match_all": {}
         match: {
-            "content": "twitch",
+            "content": "twitter",
         }
   }
 }

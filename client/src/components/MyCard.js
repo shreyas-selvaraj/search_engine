@@ -6,9 +6,6 @@ const MyCard = ({ data: {url, content, keywords } }) => {
     if(!keywords){
         keywords = []
     }
-    else{
-        keywords = keywords.splice(0, 5)
-    }
     for(var i = 0; i < content.length; i++){
         if(contentString.length > 20){
             break;
@@ -23,7 +20,7 @@ const MyCard = ({ data: {url, content, keywords } }) => {
     }   
 
     return (
-                <Card>
+                <Card style={styles.card}>
                     <CardContent>
                         <a target="_blank" href={url}>{url}</a>
                         <Typography variant="body2">{content}</Typography>
@@ -33,5 +30,11 @@ const MyCard = ({ data: {url, content, keywords } }) => {
     )
 }
 
+var styles = {
+    card: {
+        height: "20vh",
+        width: "20vw",
+    }
+}
 
 export default MyCard;

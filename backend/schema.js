@@ -33,9 +33,9 @@ var pages;
 const helper = (query) => {
     body.query.match["content"] = query;
     console.log(body)
-    client.search({index:'search_engine_test',  body:body, type:'urls'})
+    return client.search({index:'search_engine_test',  body:body, type:'urls'})
     .then((results) => {
-        pages = results.hits.hits.map((hit) => hit._source)
+        return results.hits.hits.map((hit) => hit._source)
         // for(index in results.hits.hits){
         //     result = results.hits.hits[index]
             //console.log(result)
@@ -55,8 +55,8 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(PageType),
             args: {content:{type: GraphQLString}},
             async resolve(parent, args){
-                await helper(args.content);
-                return pages
+                return await helper(args.content);
+                //return {url: "test", content: [args.content], keywords: ['a']}
             }
         },
     }

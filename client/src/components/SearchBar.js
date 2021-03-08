@@ -6,8 +6,15 @@ import MyCard from "./MyCard"
 import {Grid, Card, Fade, Grow, Slide} from "@material-ui/core";
 
 
+// const client = new ApolloClient({
+// link: concat(authMiddleware, httpLink),
+// cache: new InMemoryCache(),
+// defaultOptions: defaultOptions,
+
+// });
+
 const client = new ApolloClient({
-  uri: "http://localhost:3002/graphql"
+  uri: "http://localhost:3002/graphql",
 });
 
 class SearchBar extends React.Component {
@@ -17,30 +24,34 @@ class SearchBar extends React.Component {
       text: ""
     } 
     this.pages = [] 
+    this.onSubmitHandler = this.onSubmitHandler.bind(this);
   }
   onSubmitHandler = (e) => {
     e.preventDefault();
-    // axios.get("http://localhost:3001/test")
-    // .then((res) => {
-    //   console.log(res);
-    // }); 
     if(this.state.text.length === 0){
       return
     }
     console.log(this.state.text)
     //console.log(client);
     try {
-      client.query({
+        client.query({
         query:  getPagesQuery,
         variables: {
           content: this.state.text
-        }
+        },
       }).then((data) => {
         console.log(data.data)
         console.log(data.data.page)
-        this.setState((state) => {
-          return {text: state.text, pages: data.data.page};
-        });
+        if(data.data.page.length === 0){
+          this.setState((state) => {
+            return {text: state.text, pages: [{url: "", content: ["NO RESULTS"], keywords: []}]};
+          });
+        }
+        else{
+          this.setState((state) => {
+            return {text: state.text, pages: data.data.page};
+          });
+        }
       })
     }
     catch{
@@ -70,8 +81,7 @@ class SearchBar extends React.Component {
           <Grid container style={styles.top}
             spacing={2}
             direction="row"
-            alignItems="center"
-            justify="space-around"
+            justifyContent = "space-between"
           >
             {this.state.pages.map((page, index) => {
               return( 
@@ -79,7 +89,7 @@ class SearchBar extends React.Component {
                   <Grid item xs={2} md={3} key={index} style={styles.grid}>
                     <Grow in={true} timeout={1000}>
                       <div>
-                    <MyCard key={index} data={page} style={styles.card}/>
+                        <MyCard key={index} data={page} style={styles.card}/>
                     </div>
                     </Grow>
                   </Grid>
@@ -113,6 +123,8 @@ const styles = {
     textAlign: "center",
     marginBottom: "3vh",
     marginLeft: "3vh",
+    border: "2px solid white",
+    borderRadius: "4px",
   },
   container: {
     position: "relative",

@@ -11,7 +11,8 @@ async function scrapeController(browserInstance){
     //let url = "https://instagram.com/"
     //let url = "https://www.google.com/search?q=python&oq=python&aqs=chrome..69i64j35i39l2j0j46j0i433j69i60l2.20153j0j4&sourceid=chrome&ie=UTF-8";
     //let url = "https://google.com"; 
-    let url = "https://nodejs.org/en/";
+    //let url = "https://nodejs.org/en/";
+    let url = "https://www.python.org/"
     let elasticClient;
     try{
         elasticClient = createClient({

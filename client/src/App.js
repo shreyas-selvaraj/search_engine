@@ -52,7 +52,6 @@ var styles = {
     overflow: "auto",
   },
   search: {
-    position: "relative",
     zIndex: 3,
   }
 }

@@ -81,7 +81,7 @@ async function extract_keywords(text){
         remove_duplicates: true
 
    });
-   return extraction_result;
+   return extraction_result.slice(0, 5);
 }
 
 async function scrape(browser, elasticClient, url){

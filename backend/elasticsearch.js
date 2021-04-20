@@ -25,21 +25,22 @@ const elasticsearch = require('elasticsearch');
             console.log("created a new index", response);
         }
     });
+    //console.log(client)
     return client;
   }
 
 module.exports = {createClient}
 
-//     client.index({
-//         index: 'search_engine_test',
-//         id: '1',
-//         type: 'urls',
-//         body: {
-//             "key1": "test"
-//         }
-//     }, function(err, resp, status) {
-//         console.log(resp);
-//     });
+    // client.index({
+    //     index: 'search_engine_test',
+    //     id: '1',
+    //     type: 'urls',
+    //     body: {
+    //         "key1": "test"
+    //     }
+    // }, function(err, resp, status) {
+    //     console.log(resp);
+    // });
 // }
 
 // createClient();

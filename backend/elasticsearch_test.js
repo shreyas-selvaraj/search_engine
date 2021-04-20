@@ -15,15 +15,17 @@ const client = new elasticsearch.Client({
     }
 });
 
-let body = {
-    size: 200,
-    from: 0,
-    query: {
-        //"match_all": {}
-        match: {
-            "content": "python",
-        }
-  }
+var body = {
+  size: 1,
+  from: 0,
+  query: {
+      "match_all": {}
+      // match: {
+      //     "content": "how to create post",
+      // }
+      
+  },
+  //"sort": { "_score": { "order": "desc" }}
 }
 
 client.search({index:'search_engine_test',  body:body, type:'urls'})

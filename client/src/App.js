@@ -26,7 +26,7 @@ class App extends Component {
       <ApolloProvider client={client}>
         <div style={styles.app}>
           <SearchBar style={styles.search}/>
-          <ParticlesBg type="cobweb" num={200} color={color} bg={true} style={styles.particle}/>
+          <ParticlesBg type="cobweb" num={250} color={color} bg={true} style={styles.particle}/>
         </div>
       </ApolloProvider>
     );

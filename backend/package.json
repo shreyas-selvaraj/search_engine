@@ -23,8 +23,12 @@
     "express-graphql": "^0.12.0",
     "graphql": "^15.5.0",
     "keyword-extractor": "0.0.19",
+    "lodash": "^4.17.21",
+    "node-rake": "^1.0.1",
+    "node-summarizer": "^1.0.7",
     "puppeteer": "^8.0.0",
     "puppeteer-core": "^8.0.0",
+    "rake-js": "^0.1.1",
     "redis": "^3.0.2",
     "subquest": "^1.5.3"
   }

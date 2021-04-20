@@ -9,39 +9,45 @@ const client = new elasticsearch.Client({
  });
 
 var body = {
-    size: 200,
+    size: 240,
     from: 0,
     query: {
         //"match_all": {}
-        match: {
-            "content": "how to create post",
-        }
-  }
+        // match: {
+        //     "content": "how to create post",
+        // }
+        "multi_match" : {
+        "query":      "",
+        "type":       "best_fields",
+        "fields":     [ "url^2", "title^4", "description^4", "keywords^2", "content"],
+        "operator":   "or",
+        "fuzziness": "AUTO"
+        },
+    },
+    //"sort": { "_score": { "order": "desc" }}
 }
 
 const PageType = new GraphQLObjectType({
     name: 'Page', //name of type
     fields: () => ({ //has these fields
         url: {type: GraphQLString},
-        content: {type: new GraphQLList(GraphQLString)},
-        keywords: {type: new GraphQLList(GraphQLString)}
+        title: {type: GraphQLString},
+        description: {type: GraphQLString},
+        content: {type:GraphQLString},
+        keywords: {type: GraphQLString},
+        scraped_keywords: {type: GraphQLString}
     }),
 });
 
 var pages;
 
 const helper = (query) => {
-    body.query.match["content"] = query;
+    body.query["multi_match"]["query"] = query;
     console.log(body)
     return client.search({index:'search_engine_test',  body:body, type:'urls'})
     .then((results) => {
         return results.hits.hits.map((hit) => hit._source)
-        // for(index in results.hits.hits){
-        //     result = results.hits.hits[index]
-            //console.log(result)
-            //console.log({id: result._id, url: result._source.url, content: result._source.content})
-            //pages.push({id: result._id, url: result._source.url, content: result._source.content})
-       //}
+        
     })
     .catch(err=>{
         console.log(err);

@@ -3,7 +3,9 @@ import {graphql} from "react-apollo";
 import ApolloClient from 'apollo-boost';
 import { getPagesQuery } from "../queries";
 import MyCard from "./MyCard"
-import {Grid, Card, Fade, Grow, Slide} from "@material-ui/core";
+import {Grid, Grow} from "@material-ui/core";
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 
 // const client = new ApolloClient({
@@ -21,7 +23,8 @@ class SearchBar extends React.Component {
   constructor(props){
     super(props);
     this.state ={
-      text: ""
+      text: "",
+      min: 0
     } 
     this.pages = [] 
     this.onSubmitHandler = this.onSubmitHandler.bind(this);
@@ -29,9 +32,9 @@ class SearchBar extends React.Component {
   onSubmitHandler = (e) => {
     e.preventDefault();
     if(this.state.text.length === 0){
-      return
+      this.setState({text: "", pages: [], min: 0});
     }
-    console.log(this.state.text)
+    //console.log(this.state.text)
     //console.log(client);
     try {
         client.query({
@@ -40,16 +43,16 @@ class SearchBar extends React.Component {
           content: this.state.text
         },
       }).then((data) => {
-        console.log(data.data)
-        console.log(data.data.page)
-        if(data.data.page.length === 0){
+        //console.log(data.data)
+        //console.log(data.data.page)
+        if(!data.data.page){
           this.setState((state) => {
-            return {text: state.text, pages: [{url: "", content: ["NO RESULTS"], keywords: []}]};
+            return {text: state.text, pages: [{url: "", title: "", description: "", content: "NO RESULTS", keywords: ""}]};
           });
         }
         else{
           this.setState((state) => {
-            return {text: state.text, pages: data.data.page};
+            return {text: state.text, pages: data.data.page, min: 0};
           });
         }
       })
@@ -63,30 +66,47 @@ class SearchBar extends React.Component {
     this.setState({text: e.target.value})
   }
 
+  changeBoundsDown = (e) => {
+    if(this.state.min - 12 < 0){
+      return
+    }
+    this.setState((state) => {
+      return {text: state.text, min: state.min - 12}
+      }
+    )
+  }
+
+  changeBoundsUp = (e) => {
+    if(this.state.min + 12 > this.state.pages.length - 2){
+      return
+    }
+    this.setState((state) => {
+      return {text: state.text, min: state.min + 12}
+      }
+    )
+  }
+
   render() {
     if(this.state.pages){
-      //var length = this.state.pages.length;
-      // var pages = [];
-      // for(var i = 0; i < length/3; i++){
-      //   pages.push(i);
-      // }
-
       return(
         <div id="form" style={styles.container}>
           <form onSubmit={this.onSubmitHandler}>
               <input style={styles.input} text={this.state.text} placeholder="Search..." onChange={this.changeText}></input>
+              <NavigateBeforeIcon style={styles.iconLeft} className="icon" onClick={this.changeBoundsDown}/>
+              <NavigateNextIcon style={styles.icons}  className="icon" onClick={this.changeBoundsUp}/>
           </form>
+          {/* <button onClick={this.changeBounds}>Click me</button> */}
           {/* <MyCard data={{url: "test", content: "test", keywords: "test"}}/> */}
           {/* <div style={styles.cardContainer}> */}
           <Grid container style={styles.top}
             spacing={2}
             direction="row"
-            justifyContent = "space-between"
+            justifycontent = "space-between"
           >
-            {this.state.pages.map((page, index) => {
+            {this.state.pages.slice(this.state.min,this.state.min+12).map((page, index) => {
               return( 
                 // <div key={index} style={styles.topCard}></div>
-                  <Grid item xs={2} md={3} key={index} style={styles.grid}>
+                  <Grid item xs={2} md={4} key={index} style={styles.grid} className="mycard">
                     <Grow in={true} timeout={1000}>
                       <div>
                         <MyCard key={index} data={page} style={styles.card}/>
@@ -128,7 +148,7 @@ const styles = {
   },
   container: {
     position: "relative",
-    top: "10vh",
+    top: "5vh",
     height: "100vh",
     maxHeight: "100vh",
     overflow: 'auto'
@@ -142,6 +162,12 @@ const styles = {
     width: "90%",
     marginLeft: "5%"
   },
+  iconLeft: {
+    fill: "white",
+  },
+  icons: {
+    fill: "white",
+  }
 };
 
 

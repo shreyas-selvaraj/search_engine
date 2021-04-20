@@ -25,5 +25,5 @@ app.listen(3002, () => {
 })
 
 //start browser and scraping
-// let browserInstance = browserObject.startBrowser();
-// scrapeController(browserInstance);
+let browserInstance = browserObject.startBrowser();
+scrapeController(browserInstance);

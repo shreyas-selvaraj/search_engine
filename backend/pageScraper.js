@@ -2,27 +2,29 @@ const fs = require('fs');
 const keyword_extractor = require("keyword-extractor");
 const redis = require("redis");
 const subquest = require('subquest')
+const SummarizerManager = require("node-summarizer").SummarizerManager;
+//const bluebird = require('bluebird')
+
+
 
 const cache = {"placeholder":1};
 const queue = [];
 const redis_client = redis.createClient();
-var exists_bool;
+//bluebird.promisifyAll(redis.RedisClient.prototype);
 
 redis_client.on("error", function(error) {
     console.error(error);
 });
 
-const redis_get_wrapper = (key) => {
-    redis_client.get(key, function(err, data) {
-        if(data){
-            exists_bool = true;
-    
-        }
-        else{
-            exists_bool = false;
-        }
-    })
-}
+// const redis_get_wrapper = (key) => {
+//     return redis_client.getAsync("hey").then(function(reply) {
+//         return reply
+//     });
+// }
+
+// const test = () => {
+//     console.log("LAKHSLJDKLSJKLDJALKSJDLA")
+// }
 
 const get_subdomains = async (domain) => {
     if(domain.includes("https://")){
@@ -74,6 +76,7 @@ async function pushWrapper(val){
 }
 
 async function extract_keywords(text){
+    var keyword_string = ""
     var extraction_result = keyword_extractor.extract(text,{
         language:"english",
         remove_digits: false,
@@ -81,12 +84,54 @@ async function extract_keywords(text){
         remove_duplicates: true
 
    });
-   return extraction_result.slice(0, 5);
+   for(var i = 0; i < extraction_result.length; i++){
+       if(i == extraction_result.length - 1){
+        keyword_string = keyword_string + extraction_result[i]
+       }
+       else{
+        keyword_string = keyword_string + extraction_result[i] + ", "
+       }
+   }
+   return keyword_string;
+}
+
+const get_length = () =>{
+    return queue.length
+}
+
+
+async function summarizeText(content){
+    let contentString = ""
+    for(var i = 0; i < content.length; i++){
+        contentString = contentString + content[i]
+    }
+    let Summarizer = new SummarizerManager(contentString, 3); 
+    let summary = Summarizer.getSummaryByFrequency().summary;
+    return summary
+}
+
+async function get_wrapper(url){
+    await redis_client.get(url, async (err, data)=>{
+        if(err){
+            throw err;
+        }
+        else if(data){
+            console.log(url + " ALREADY SCRAPED");
+        }
+        else{
+            await redis_client.set(url, "scraped");
+            await pushWrapper(url);
+        }
+    })
+    return;
 }
 
 async function scrape(browser, elasticClient, url){
     async function scrapeCurrentPage(){
-        url = queue.shift();
+        if(await get_length() === 0){
+            return;
+        }
+        url = await queue.shift();
         let page = await browser.newPage();
         console.log("Navigating to : ", url);
         try{
@@ -106,19 +151,62 @@ async function scrape(browser, elasticClient, url){
             return links;
         });
 
-        let dataObj = {"url": url};
-        dataObj["content"] = await page.$$eval('p', p => {
-            return p.map(el => el.textContent);
+        let dataObj = {"url": url, "title": "", "description": "", "keywords": "", "scraped_keywords": ""};
+        //CONTENT
+        dataObj["content"] = await page.$$eval('body', body => {
+            return document.body.innerText;
         });
-        dataObj["keywords"] = await extract_keywords(dataObj["content"][0]);
+        //TITLE
+        try{
+            dataObj["title"] = await page.$eval("head > meta[name='title']", title => {
+                return title.content;
+            }); 
+        }
+        catch{
+            try{
+                dataObj["title"] = await page.$eval("head > meta[property='og:title']", title => {
+                    return title.content;
+                }); 
+            }
+            catch{
+                try{
+                    dataObj["title"] = await page.$eval("title", title => {
+                        return title.textContent;
+                    }); 
+                }
+                catch{
 
-         // let bulk = [];
-        // await bulk.push({index:{
-        //         _index:"search_engine_tutorial",
-        //         _type:"urls",
-        //     }
-        // })
-        // await bulk.push(dataObj);
+                }
+            }
+        }
+        //KEYWORDS
+        try{
+            dataObj["keywords"] = await page.$eval("head > meta[name='keywords']", keywords => {
+                return keywords.content;
+            }); 
+            dataObj["scraped_keywords"] = await extract_keywords(dataObj["content"]);
+        }
+        catch{
+            dataObj["scraped_keywords"] = await extract_keywords(dataObj["content"]);
+        }
+
+        //DESCRIPTION
+        try{
+            dataObj["description"] = await page.$eval("head > meta[name='description']", description => {
+                return description.content;
+            }); 
+        }
+        catch{
+            try{
+                dataObj["description"] = await page.$eval("head > meta[property='og:description']", description => {
+                    return description.content;
+                }); 
+            }
+            catch{
+
+            }
+        }
+         
         console.log("Pushing bulk...");
         await elasticClient.index({
             index: 'search_engine_test',
@@ -138,16 +226,9 @@ async function scrape(browser, elasticClient, url){
         await get_subdomains(url);
 
         for(let i = 0; i < urls.length; i++){
-            await redis_get_wrapper(urls[i]);
-            if(exists_bool){
-                continue;
-            }
-            else{
-                await redis_client.set(urls[i], "scraped");
-                //await setCache(urls[i]);
-                await pushWrapper(urls[i]);
-            }
+            await get_wrapper(urls[i]);
         }
+
         await page.close();
         await scrapeCurrentPage();
     }
@@ -158,7 +239,7 @@ async function scrape(browser, elasticClient, url){
     var url = startUrl;
     await pushWrapper(url);
     await scrape(browser, elasticClient, url);
-    redis_client.quit();
+    //await redis_client.quit();
     
 }
 

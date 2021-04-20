@@ -1,24 +1,28 @@
 Notable features:
 - all important stuff
+- backend:
+    - node js, puppeteer, graphql, elasticsearch, redis, 
+- frontend
+    - React, Apollo, MaterialUI, 
+- devops:
+- misc: 
 - extra:
+    - distributing computing for scraping + searching 
     - breadth first using queue 
     - keyword extraction
     - async redis cache across nodes
     - subdomain scanner
+    - uses weighted complex elasticsearch queries 
+    - concurrently scrapes, scraped over 1 million of most popular domains
+    - microservice architecture
 
 TODO:
 /*
-- can add tags and other stuff to json body for searching
 - come up with algorithm to distribute crawling, need to go to another link if it ends
-- breadth first instead of depth first recursion?
-- redis cache to skip repeats requests?
-- frontend 
 - some sort page rank algorithm
 - add to kubernetes gcp, how to distribute computing
 - convert to typescript
-- set headless to true
 - organize files + MAKE CODE NICER AND PROFESSIONAL
--  write subdomain scanner?
 - testing/continuous deployment?
 - use constant redis server
 */

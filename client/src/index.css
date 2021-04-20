@@ -12,14 +12,17 @@ code {
     monospace;
 }
 
-@font-face {
-  font-family: 'Lato-Black';
-  src: local('Lato-Black'), url("./assets/fonts/Lato-Black.ttf") format('ttf');
-}
-
 input {
   background: url("./assets/images/koi_fish_circle.png");
   background-size: 3vh;
   background-repeat: no-repeat;
   color: white;
+}
+
+.mycard:hover {
+  opacity: 0.9
+}
+
+.icon:hover {
+  cursor: pointer;
 }
